@@ -4,11 +4,11 @@ pipeline {
     agent any
     
     parameters {
-        booleanParam(name: 'SKIP_SECURITY_VALIDATION', defaultValue: true, description: 'Skip security validation stage')
-        booleanParam(name: 'SKIP_DEPENDENCY_SCAN', defaultValue: true, description: 'Skip OWASP dependency scan')
-        booleanParam(name: 'SKIP_SAST_ANALYSIS', defaultValue: true, description: 'Skip SAST security analysis')
-        booleanParam(name: 'SKIP_SECURE_TESTING', defaultValue: true, description: 'Skip secure testing stage')
-        booleanParam(name: 'SKIP_BUILD_SIGNING', defaultValue: true, description: 'Skip build artifacts signing')
+        booleanParam(name: 'SKIP_SECURITY_VALIDATION', defaultValue: false, description: 'Skip security validation stage')
+        booleanParam(name: 'SKIP_DEPENDENCY_SCAN', defaultValue: false, description: 'Skip OWASP dependency scan')
+        booleanParam(name: 'SKIP_SAST_ANALYSIS', defaultValue: false, description: 'Skip SAST security analysis')
+        booleanParam(name: 'SKIP_SECURE_TESTING', defaultValue: false, description: 'Skip secure testing stage')
+        booleanParam(name: 'SKIP_BUILD_SIGNING', defaultValue: false, description: 'Skip build artifacts signing')
         choice(name: 'ENVIRONMENT', choices: ['test', 'staging'], description: 'Target environment')
     }
     
@@ -30,7 +30,7 @@ pipeline {
             }
         }
         
-      /*   stage('Configuration Loading') {
+        stage('Configuration Loading') {
             steps {
                 script {
                     def pipelineConfig = readJSON file: 'config/pipeline.json'
@@ -195,7 +195,7 @@ pipeline {
                     ])
                 }
             }
-        }  */
+        } 
         
     }
     
