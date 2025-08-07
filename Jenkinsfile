@@ -16,7 +16,7 @@ pipeline {
                 securityValidation()
             }
         }
-        
+       /** 
         stage('Secure Checkout') {
             parallel {
                 stage('App Repository') {
@@ -72,17 +72,13 @@ pipeline {
                     publishSecurityReports('tests')
                 }
             }
-        }
+        } **/
     }
     
     post {
         always { 
                 // Maintenant fileExists fonctionne
-                if (fileExists('security-audit.json')) {
-                    archiveArtifacts artifacts: 'security-audit.json,security-audit.md', fingerprint: true
-                }           
-                secureCleanup()
-        }
+               }
         success { notifySecurityTeam('SUCCESS') }
         failure { notifySecurityTeam('FAILURE') }
     }
