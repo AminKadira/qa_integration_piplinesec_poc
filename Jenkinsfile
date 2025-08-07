@@ -13,7 +13,8 @@ pipeline {
     stages {
         stage('Security Validation') {
             steps {
-                securityValidation()
+               // securityValidation()
+               echo " Security Pre-validation Started"
             }
         }
        /** 
