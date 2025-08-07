@@ -47,7 +47,7 @@ pipeline {
         
         stage('Security Validation') {
             when {
-                not { params.SKIP_SECURITY_VALIDATION }
+                not { !params.SKIP_SECURITY_VALIDATION }
             }
             steps {
                 securityValidation()
@@ -73,7 +73,7 @@ pipeline {
         
         stage('OWASP Dependency Scan') {
             when {
-                not { params.SKIP_DEPENDENCY_SCAN }
+                not { !params.SKIP_DEPENDENCY_SCAN }
             }
             steps {
                 script {
@@ -121,7 +121,7 @@ pipeline {
         
         stage('SAST Analysis') {
             when {
-                not { params.SKIP_SAST_ANALYSIS }
+                not { !params.SKIP_SAST_ANALYSIS }
             }
             parallel {
                 stage('SonarQube') {
@@ -168,7 +168,7 @@ pipeline {
         
         stage('Secure Testing') {
             when {
-                not { params.SKIP_SECURE_TESTING }
+                not { !params.SKIP_SECURE_TESTING }
             }
             steps {
                 script {
