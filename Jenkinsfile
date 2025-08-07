@@ -76,9 +76,7 @@ pipeline {
     }
     
     post {
-        always { 
-                // Maintenant fileExists fonctionne
-               }
+       
         success { notifySecurityTeam('SUCCESS') }
         failure { notifySecurityTeam('FAILURE') }
     }
