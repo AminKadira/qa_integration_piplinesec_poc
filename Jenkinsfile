@@ -30,7 +30,7 @@ pipeline {
             }
         }
         
-        stage('Configuration Loading') {
+      /*   stage('Configuration Loading') {
             steps {
                 script {
                     def pipelineConfig = readJSON file: 'config/pipeline.json'
@@ -195,7 +195,8 @@ pipeline {
                     ])
                 }
             }
-        }
+        }  */
+        
     }
     
     post {
