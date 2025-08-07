@@ -2,7 +2,7 @@
 
 Pipeline Jenkins modulaire pour applications .NET avec sécurité intégrée selon standards OWASP.
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Structure projet
 ```
@@ -45,7 +45,7 @@ Security Validation → Secure Checkout → OWASP Dependency Scan →
 Secure Build → SAST Analysis → Secure Testing → Security Audit
 ```
 
-## ⚡ Quick Start
+## Quick Start
 
 ### 1. Configuration Jenkins
 
@@ -136,7 +136,7 @@ GPG_PASSPHRASE=<gpg-passphrase>
 ENHANCED_SECURITY=true  # Pour branches protégées
 ```
 
-## 🔒 Méthodes Sécurité - Jenkins Shared Library
+## Méthodes Sécurité - Jenkins Shared Library
 
 ### 1. securityValidation()
 
@@ -200,44 +200,44 @@ createSecurityAuditLog()
 - Repository information (commit, branch, URL)
 - Export JSON + Markdown + HTML report
 
-## 🔒 Sécurité OWASP
+## Sécurité OWASP
 
 ### Security Gates intégrés
 
 **1. Pre-Pipeline Security Validation**
 ```bash
 # Validation complète avant exécution
-✅ Configuration sécurité présente
-✅ Outils sécurité disponibles  
-✅ Credentials configurés
-✅ Enhanced security (branches protégées)
+Configuration sécurité présente
+Outils sécurité disponibles  
+Credentials configurés
+Enhanced security (branches protégées)
 ```
 
 **2. Secure Repository Management**
 ```bash
 # Checkout sécurisé avec validation
-✅ Nettoyage workspace sécurisé
-✅ Validation URLs repository
-✅ Vérification signatures commits
-✅ Scan secrets historique basique
+Nettoyage workspace sécurisé
+Validation URLs repository
+Vérification signatures commits
+Scan secrets historique basique
 ```
 
 **3. Cryptographic Artifact Signing**
 ```bash
 # Signature GPG automatique
-✅ Signature détachée tous artefacts
-✅ Vérification intégrité signatures
-✅ Manifest signatures avec hashes
-✅ Nettoyage clés privées post-usage
+Signature détachée tous artefacts
+Vérification intégrité signatures
+Manifest signatures avec hashes
+Nettoyage clés privées post-usage
 ```
 
 **4. Comprehensive Security Audit**
 ```bash
 # Audit trail compliance
-✅ Export JSON/Markdown/HTML
-✅ Traçabilité complète pipeline
-✅ Status OWASP compliance
-✅ Archiving sécurisé rapports
+Export JSON/Markdown/HTML
+Traçabilité complète pipeline
+Status OWASP compliance
+Archiving sécurisé rapports
 ```
 
 ### Configuration sécurité
@@ -284,7 +284,7 @@ createSecurityAuditLog()
 ./scripts/test/sanitize-reports.sh ./tests/reports
 ```
 
-## 📊 Rapports et monitoring
+## Rapports et monitoring
 
 ### Rapports générés
 - **Security Audit Report** : `security-audit.json` + `security-audit.md`
@@ -316,7 +316,7 @@ createSecurityAuditLog()
 }
 ```
 
-## 🔧 Configuration environnements
+## Configuration environnements
 
 ### Multi-environment support
 
@@ -336,7 +336,7 @@ createSecurityAuditLog()
 }
 ```
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Erreurs sécurité communes
 
@@ -390,7 +390,7 @@ export ENHANCED_SECURITY=true
 tail -f /var/log/jenkins/jenkins.log | grep "SECURITY"
 ```
 
-## 🔄 Maintenance
+## Maintenance
 
 ### Mise à jour seuils sécurité
 1. Éditer `config/security.json`
@@ -413,14 +413,14 @@ gpg --export-secret-keys > new-private-key.asc
 3. Tester avec pipeline non-prod
 4. Documentation update
 
-## 📚 Documentation
+## Documentation
 
 - **Security Implementation** : `docs/security-implementation.md`
 - **Jenkins Shared Library** : `docs/shared-library-guide.md`
 - **Compliance Runbook** : `docs/compliance-runbook.md`
 - **GPG Key Management** : `docs/gpg-key-management.md`
 
-## 🤝 Contributing
+## Contributing
 
 ### Standards sécurité
 
@@ -429,7 +429,7 @@ gpg --export-secret-keys > new-private-key.asc
 // vars/newMethod.groovy
 def call(Map config = [:]) {
     script {
-        echo "🔒 Security method: ${config.method}"
+        echo " Security method: ${config.method}"
         
         // Validation input
         if (!config.required) {
@@ -439,7 +439,7 @@ def call(Map config = [:]) {
         // Implementation sécurisée
         // ...
         
-        echo "✅ Security method completed"
+        echo " Security method completed"
     }
 }
 ```
@@ -453,18 +453,18 @@ def call(Map config = [:]) {
 jenkinsfile-runner --file Jenkinsfile --runTests
 ```
 
-## 📜 License
+## License
 
 MIT License - voir `LICENSE` file pour détails.
 
-## 🆘 Support
+## Support
 
 - **Security Issues** : security-team@company.com
 - **Technical Support** : devops-team@company.com
 - **Documentation** : Wiki projet Jenkins
 - **Emergency** : On-call DevSecOps team
 
-## 🔍 Security Compliance
+## Security Compliance
 
 **Standards respectés :**
 - OWASP DevSecOps Guideline
