@@ -75,12 +75,5 @@ pipeline {
         }
     }
     
-    post {
-        always { 
-            createSecurityAuditLog()
-            secureCleanup()
-        }
-        success { notifySecurityTeam('SUCCESS') }
-        failure { notifySecurityTeam('FAILURE') }
-    }
+  
 }
