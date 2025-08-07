@@ -77,8 +77,10 @@ pipeline {
     
     post {
         always { 
-            createSecurityAuditLog()
-            secureCleanup()
+                // Maintenant fileExists fonctionne
+                if (fileExists('security-audit.json')) {
+                    archiveArtifacts artifacts: 'security-audit.json,security-audit.md', fingerprint: true
+                }            secureCleanup()
         }
         success { notifySecurityTeam('SUCCESS') }
         failure { notifySecurityTeam('FAILURE') }
