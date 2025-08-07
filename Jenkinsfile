@@ -23,7 +23,7 @@ pipeline {
                 
                 script {
                     if (!fileExists('config/pipeline.json')) {
-                        error "config/pipeline.json not found in repository"
+                        error "config/pipeline.json expression  found in repository"
                     }
                     echo "Repository checked out, config files available"
                 }
@@ -47,7 +47,7 @@ pipeline {
         
         stage('Security Validation') {
             when {
-                params.SKIP_SECURITY_VALIDATION 
+                expression  { !params.SKIP_SECURITY_VALIDATION }
             }
             steps {
                 securityValidation()
@@ -73,7 +73,7 @@ pipeline {
         
         stage('OWASP Dependency Scan') {
             when {
-                params.SKIP_DEPENDENCY_SCAN 
+                expression  { !params.SKIP_DEPENDENCY_SCAN }
             }
             steps {
                 script {
@@ -121,7 +121,7 @@ pipeline {
         
         stage('SAST Analysis') {
             when {
-                params.SKIP_SAST_ANALYSIS 
+                expression  { !params.SKIP_SAST_ANALYSIS }
             }
             parallel {
                 stage('SonarQube') {
@@ -168,7 +168,7 @@ pipeline {
         
         stage('Secure Testing') {
             when {
-                params.SKIP_SECURE_TESTING 
+                expression  { !params.SKIP_SECURE_TESTING }
             }
             steps {
                 script {
