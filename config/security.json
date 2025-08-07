@@ -1,0 +1,41 @@
+{
+    "owasp": {
+        "dependencyCheck": {
+            "failOnCVSS": 7.0,
+            "formats": ["HTML", "JSON", "XML"],
+            "suppressionFile": "templates/suppression.xml"
+        },
+        "sast": {
+            "sonarQube": {
+                "qualityGateTimeout": 300,
+                "securityReviewWait": true
+            },
+            "thresholds": {
+                "highSeverity": 0,
+                "mediumSeverity": 5,
+                "lowSeverity": 10
+            }
+        }
+    },
+    "testing": {
+        "playwright": {
+            "browsers": ["chromium"],
+            "timeout": 30000,
+            "retries": 2
+        },
+        "sanitization": {
+            "patterns": [
+                "password=[^&]*",
+                "\"token\":\"[^\"]*\"",
+                "authorization: bearer [^\\s]*"
+            ]
+        }
+    },
+    "notifications": {
+        "securityTeam": "amin.kadira.ext@pluxeegroup.com",
+        "alerts": {
+            "highSeverity": true,
+            "mediumSeverity": false
+        }
+    }
+}
