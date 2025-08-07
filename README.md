@@ -252,7 +252,7 @@ Archiving sécurisé rapports
 - Contrôles renforcés URL repositories
 - Audit logging complet
 
-## 🛠️ Scripts disponibles
+## Scripts disponibles
 
 ### Scripts sécurité
 ```bash
