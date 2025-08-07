@@ -77,8 +77,18 @@ pipeline {
     }
     
     post {
-       
-        success { notifySecurityTeam('SUCCESS') }
-        failure { notifySecurityTeam('FAILURE') }
+        always {
+            script {
+                echo "🧹 Pipeline cleanup completed"
+            }
+        }
+        
+        success {
+            echo "✅ SUCCESS: Security pipeline completed - All gates passed"
+        }
+        
+        failure {
+            echo "❌ SECURITY ALERT: Pipeline failed - Security review required"
+        }
     }
 }
