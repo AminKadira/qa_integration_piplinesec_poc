@@ -11,7 +11,9 @@ pipeline {
                     sh 'ls -la vars/'
                     
                     // Test méthode directement
+                    echo "load securityValidation()"
                     def securityValidation = load 'vars/securityValidation.groovy'
+                    echo"run securityValidation()"
                     securityValidation()
                 }
             }
