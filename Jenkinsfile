@@ -21,7 +21,7 @@ environment {
                     def pipelineConfig = readJSON text: env.PIPELINE_CONFIG_JSON
                     def securityConfig = readJSON text: env.SECURITY_CONFIG_JSON
                     
-                    echo "✅ Configuration loaded for: ${pipelineConfig.project.name}"
+                    echo "Configuration loaded for: ${pipelineConfig.project.name}"
                 }
             }
         }
@@ -48,6 +48,7 @@ environment {
                 }
             }
         }
+
         stage('OWASP Dependency Scan') {
             steps {
                 dependencySecurityScan('app')
@@ -102,7 +103,7 @@ environment {
     post {
     always {
         script {
-            echo "🧹 Pipeline cleanup completed"
+            echo "Pipeline cleanup completed"
         }
     }
     
