@@ -31,7 +31,7 @@ def call() {
         if (missingVars) {
             error "SECURITY: Missing sensitive environment variables: ${missingVars.join(', ')}"
         }
-        
+        echo "Validation environnement pipeline completed"
         // Validation branch security policy
         def protectedBranches = ['main', 'master', 'release/*']
         def currentBranch = env.BRANCH_NAME ?: 'unknown'

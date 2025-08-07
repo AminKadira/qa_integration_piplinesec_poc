@@ -140,6 +140,11 @@ ENHANCED_SECURITY=true  # Pour branches protégées
 
 ### 1. securityValidation()
 
+# Téléchargement et installation
+cd C:\tools
+wget https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.7/dependency-check-9.0.7-release.zip
+unzip dependency-check-9.0.7-release.zip
+
 **Fonction :** Validation pré-pipeline complète
 ```groovy
 // Validation dans vars/securityValidation.groovy
