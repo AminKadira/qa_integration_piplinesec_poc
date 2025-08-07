@@ -1,4 +1,4 @@
-//@Library('pipeline-poc-shared-library') _
+@Library('pipeline-poc-shared-library') _
 
 pipeline {
     agent any
@@ -13,11 +13,10 @@ pipeline {
     stages {
         stage('Security Validation') {
             steps {
-               // securityValidation()
-               echo " Security Pre-validation Started"
+                securityValidation()
             }
         }
-       /** 
+        
         stage('Secure Checkout') {
             parallel {
                 stage('App Repository') {
@@ -73,22 +72,15 @@ pipeline {
                     publishSecurityReports('tests')
                 }
             }
-        } **/
+        }
     }
     
     post {
-        always {
-            script {
-                echo "🧹 Pipeline cleanup completed"
-            }
+        always { 
+            createSecurityAuditLog()
+            secureCleanup()
         }
-        
-        success {
-            echo "✅ SUCCESS: Security pipeline completed - All gates passed"
-        }
-        
-        failure {
-            echo "❌ SECURITY ALERT: Pipeline failed - Security review required"
-        }
+        success { notifySecurityTeam('SUCCESS') }
+        failure { notifySecurityTeam('FAILURE') }
     }
 }
