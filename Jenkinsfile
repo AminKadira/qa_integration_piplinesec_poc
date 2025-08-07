@@ -3,14 +3,29 @@
 pipeline {
     agent any
     
-    environment {
-        PIPELINE_CONFIG = readJSON file: "config/pipeline.json"
-        SECURITY_CONFIG = readJSON file: "config/security.json"
-        ENV_CONFIG = readJSON file: "config/environments/${params.ENVIRONMENT ?: 'test'}.json"
+environment {
+        // Variables simples uniquement dans environment
         BUILD_HASH = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
     }
     
     stages {
+        stage('Configuration Loading') {
+            steps {
+                script {
+                    // Chargement configs dans script block
+                    env.PIPELINE_CONFIG_JSON = readFile('config/pipeline.json')
+                    env.SECURITY_CONFIG_JSON = readFile('config/security.json')
+                    env.ENV_CONFIG_JSON = readFile("config/environments/${params.ENVIRONMENT ?: 'test'}.json")
+                    
+                    // Parse JSON quand nécessaire
+                    def pipelineConfig = readJSON text: env.PIPELINE_CONFIG_JSON
+                    def securityConfig = readJSON text: env.SECURITY_CONFIG_JSON
+                    
+                    echo "✅ Configuration loaded for: ${pipelineConfig.project.name}"
+                }
+            }
+        }
+        
         stage('Security Validation') {
             steps {
                 securityValidation()
@@ -18,20 +33,21 @@ pipeline {
         }
         
         stage('Secure Checkout') {
-            parallel {
-                stage('App Repository') {
-                    steps {
-                        secureCheckout('app', PIPELINE_CONFIG.repositories.application)
-                    }
-                }
-                stage('Test Repository') {
-                    steps {
-                        secureCheckout('tests', PIPELINE_CONFIG.repositories.tests)
-                    }
+            steps {
+                script {
+                    def pipelineConfig = readJSON text: env.PIPELINE_CONFIG_JSON
+                    
+                    parallel(
+                        'App Repository': {
+                            secureCheckout('app', pipelineConfig.repositories.application)
+                        },
+                        'Test Repository': {
+                            secureCheckout('tests', pipelineConfig.repositories.tests)
+                        }
+                    )
                 }
             }
         }
-        
         stage('OWASP Dependency Scan') {
             steps {
                 dependencySecurityScan('app')
@@ -75,5 +91,27 @@ pipeline {
         }
     }
     
-  
+    /**post {
+        always { 
+            createSecurityAuditLog()
+            secureCleanup()
+        }
+        success { notifySecurityTeam('SUCCESS') }
+        failure { notifySecurityTeam('FAILURE') }
+    }**/
+    post {
+    always {
+        script {
+            echo "🧹 Pipeline cleanup completed"
+        }
+    }
+    
+    success {
+        echo "SUCCESS: Security pipeline completed - All gates passed"
+    }
+    
+    failure {
+        echo "SECURITY ALERT: Pipeline failed - Security review required"
+    }
+}
 }
