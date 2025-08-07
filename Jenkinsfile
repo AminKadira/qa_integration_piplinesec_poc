@@ -80,7 +80,8 @@ pipeline {
                 // Maintenant fileExists fonctionne
                 if (fileExists('security-audit.json')) {
                     archiveArtifacts artifacts: 'security-audit.json,security-audit.md', fingerprint: true
-                }            secureCleanup()
+                }           
+                secureCleanup()
         }
         success { notifySecurityTeam('SUCCESS') }
         failure { notifySecurityTeam('FAILURE') }
