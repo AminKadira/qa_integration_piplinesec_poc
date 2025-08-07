@@ -215,7 +215,7 @@ pipeline {
         }
         cleanup {
             // sh '''
-            //     echo "Secure cleanup..."
+                 echo "Secure cleanup..."
             //     find . -name "*.tmp" -delete
             //     find . -name "*.log" -exec rm -f {} + 2>/dev/null || true
             // '''
