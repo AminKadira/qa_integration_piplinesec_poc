@@ -9,7 +9,7 @@ pipeline {
         booleanParam(name: 'SKIP_SAST_ANALYSIS', defaultValue: true, description: 'Skip SAST security analysis')
         booleanParam(name: 'SKIP_SECURE_TESTING', defaultValue: true, description: 'Skip secure testing stage')
         booleanParam(name: 'SKIP_BUILD_SIGNING', defaultValue: true, description: 'Skip build artifacts signing')
-        choice(name: 'ENVIRONMENT', choices: ['test', 'staging', 'prod'], description: 'Target environment')
+        choice(name: 'ENVIRONMENT', choices: ['test', 'staging'], description: 'Target environment')
     }
     
     environment {
@@ -214,11 +214,11 @@ pipeline {
             // )
         }
         cleanup {
-            sh '''
-                echo "Secure cleanup..."
-                find . -name "*.tmp" -delete
-                find . -name "*.log" -exec rm -f {} + 2>/dev/null || true
-            '''
+            // sh '''
+            //     echo "Secure cleanup..."
+            //     find . -name "*.tmp" -delete
+            //     find . -name "*.log" -exec rm -f {} + 2>/dev/null || true
+            // '''
         }
     }
 }
