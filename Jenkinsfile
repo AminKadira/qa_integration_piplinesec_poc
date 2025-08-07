@@ -3,30 +3,52 @@
 pipeline {
     agent any
     
-environment {
-        // Variables simples uniquement dans environment
+    parameters {
+        booleanParam(name: 'SKIP_SECURITY_VALIDATION', defaultValue: false, description: 'Skip security validation stage')
+        booleanParam(name: 'SKIP_DEPENDENCY_SCAN', defaultValue: false, description: 'Skip OWASP dependency scan')
+        booleanParam(name: 'SKIP_SAST_ANALYSIS', defaultValue: false, description: 'Skip SAST security analysis')
+        booleanParam(name: 'SKIP_SECURE_TESTING', defaultValue: false, description: 'Skip secure testing stage')
+        booleanParam(name: 'SKIP_BUILD_SIGNING', defaultValue: false, description: 'Skip build artifacts signing')
+        choice(name: 'ENVIRONMENT', choices: ['test', 'staging', 'prod'], description: 'Target environment')
+    }
+    
+    environment {
         BUILD_HASH = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
     }
     
     stages {
+        stage('Repository Checkout') {
+            steps {
+                checkout scm
+                
+                script {
+                    if (!fileExists('config/pipeline.json')) {
+                        error "config/pipeline.json not found in repository"
+                    }
+                    echo "Repository checked out, config files available"
+                }
+            }
+        }
+        
         stage('Configuration Loading') {
             steps {
                 script {
-                    // Chargement configs dans script block
-                    env.PIPELINE_CONFIG_JSON = readFile('config/pipeline.json')
-                    env.SECURITY_CONFIG_JSON = readFile('config/security.json')
-                    env.ENV_CONFIG_JSON = readFile("config/environments/${params.ENVIRONMENT ?: 'test'}.json")
+                    def pipelineConfig = readJSON file: 'config/pipeline.json'
+                    def securityConfig = readJSON file: 'config/security.json'
                     
-                    // Parse JSON quand nécessaire
-                    def pipelineConfig = readJSON text: env.PIPELINE_CONFIG_JSON
-                    def securityConfig = readJSON text: env.SECURITY_CONFIG_JSON
+                    env.PROJECT_NAME = pipelineConfig.project.name
+                    env.APP_REPO_URL = pipelineConfig.repositories.application.url
+                    env.TEST_REPO_URL = pipelineConfig.repositories.tests.url
                     
-                    echo "Configuration loaded for: ${pipelineConfig.project.name}"
+                    echo "Configuration loaded for: ${env.PROJECT_NAME}"
                 }
             }
         }
         
         stage('Security Validation') {
+            when {
+                not { params.SKIP_SECURITY_VALIDATION }
+            }
             steps {
                 securityValidation()
             }
@@ -35,7 +57,7 @@ environment {
         stage('Secure Checkout') {
             steps {
                 script {
-                    def pipelineConfig = readJSON text: env.PIPELINE_CONFIG_JSON
+                    def pipelineConfig = readJSON file: 'config/pipeline.json'
                     
                     parallel(
                         'App Repository': {
@@ -48,71 +70,155 @@ environment {
                 }
             }
         }
-
+        
         stage('OWASP Dependency Scan') {
+            when {
+                not { params.SKIP_DEPENDENCY_SCAN }
+            }
             steps {
-                dependencySecurityScan('app')
+                script {
+                    echo "Starting OWASP dependency scan..."
+                    dir('app') {
+                        sh './scripts/security/dependency-check.sh . ../config/security.json'
+                    }
+                }
             }
             post {
-                always { publishSecurityReports('dependency') }
+                always { 
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'app/dependency-check-report',
+                        reportFiles: 'dependency-check-report.html',
+                        reportName: 'OWASP Dependency Check Report'
+                    ])
+                }
             }
         }
         
         stage('Secure Build') {
             steps {
-                dotnetSecureBuild('app')
+                script {
+                    echo "Starting secure .NET build..."
+                    dir('app') {
+                        sh '../scripts/build/dotnet-build.sh . ../config/pipeline.json'
+                    }
+                }
             }
             post {
-                success { signBuildArtifacts('app') }
+                success { 
+                    script {
+                        if (!params.SKIP_BUILD_SIGNING) {
+                            signBuildArtifacts('app')
+                        } else {
+                            echo "Build signing skipped by parameter"
+                        }
+                    }
+                }
             }
         }
         
         stage('SAST Analysis') {
+            when {
+                not { params.SKIP_SAST_ANALYSIS }
+            }
             parallel {
                 stage('SonarQube') {
-                    steps { sonarSecurityAnalysis('app') }
+                    steps { 
+                        script {
+                            dir('app') {
+                                withSonarQubeEnv('SonarQube') {
+                                    sh '''
+                                        sonar-scanner \
+                                        -Dsonar.projectKey=spf-invoice-service \
+                                        -Dsonar.sources=. \
+                                        -Dsonar.exclusions=**/bin/**,**/obj/**,**/wwwroot/lib/** \
+                                        -Dsonar.qualitygate.wait=true \
+                                        -Dsonar.qualitygate.timeout=300
+                                    '''
+                                }
+                            }
+                        }
+                    }
                 }
                 stage('Security Code Scan') {
-                    steps { securityCodeScan('app') }
+                    steps { 
+                        script {
+                            dir('app') {
+                                sh '../scripts/security/sast-scan.sh . ../config/security.json'
+                            }
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    script {
+                        timeout(time: 5, unit: 'MINUTES') {
+                            def qualityGate = waitForQualityGate()
+                            if (qualityGate.status != 'OK') {
+                                error "Quality gate failed: ${qualityGate.status}"
+                            }
+                        }
+                    }
                 }
             }
         }
         
         stage('Secure Testing') {
-            when { expression { params.RUN_TESTS != 'false' } }
+            when {
+                not { params.SKIP_SECURE_TESTING }
+            }
             steps {
-                secureE2ETests('tests')
+                script {
+                    echo "Running secure E2E tests..."
+                    dir('tests') {
+                        sh '../scripts/test/run-playwright.sh .'
+                    }
+                }
             }
             post {
                 always { 
-                    sanitizeTestReports('tests')
-                    publishSecurityReports('tests')
+                    script {
+                        dir('tests') {
+                            sh '../scripts/test/sanitize-reports.sh ./test-results'
+                        }
+                    }
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'tests/playwright-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Secure Test Report'
+                    ])
                 }
             }
         }
     }
     
-    /**post {
-        always { 
-            createSecurityAuditLog()
-            secureCleanup()
-        }
-        success { notifySecurityTeam('SUCCESS') }
-        failure { notifySecurityTeam('FAILURE') }
-    }**/
     post {
-    always {
-        script {
-            echo "Pipeline cleanup completed"
+        always {
+            createSecurityAuditLog()
+        }
+        success {
+            echo "Security pipeline completed - All gates passed"
+        }
+        failure {
+            echo "SECURITY ALERT: Pipeline failed - Security review required"
+            emailext (
+                subject: "SECURITY ALERT: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: "Security pipeline failed. Immediate review required.",
+                to: "security-team@company.com"
+            )
+        }
+        cleanup {
+            sh '''
+                echo "Secure cleanup..."
+                find . -name "*.tmp" -delete
+                find . -name "*.log" -exec rm -f {} + 2>/dev/null || true
+            '''
         }
     }
-    
-    success {
-        echo "SUCCESS: Security pipeline completed - All gates passed"
-    }
-    
-    failure {
-        echo "SECURITY ALERT: Pipeline failed - Security review required"
-    }
-}
 }
