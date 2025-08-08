@@ -29,8 +29,8 @@ pipeline {
                 dir('app') {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
-                        url: 'http://localhost:3000/admin/spf.invoice.service.git',
-                        credentialsId: 'GiteaTokenForJenkins'
+                        url: 'https://admin@localhost:3000/admin/spf.insssvoice.service.git',
+                        credentialsId: 'git-credentials'
                     echo "SUCCESS: Application repository cloned successfully"
                     
                     bat 'echo "INFO: Application files:"'
@@ -47,8 +47,8 @@ pipeline {
                 dir('tests') {
                     echo "INFO: Cloning test repository..."
                     git branch: 'main',
-                        url: 'http://localhost:3000/admin/spf-invoice-tests.git',
-                        credentialsId: 'GiteaTokenForJenkins'
+                        url: 'https://localhost:3000/admin/spf-invoice-tests',
+                        credentialsId: 'git-credentials'
                     echo "SUCCESS: Test repository cloned successfully"
                     
                     bat 'echo "INFO: Test files:"'
