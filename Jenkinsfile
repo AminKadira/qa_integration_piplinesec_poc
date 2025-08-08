@@ -23,10 +23,10 @@ pipeline {
         
         stage('Test Checkout') {
             steps {
-                echo "Testing Git access..."
-                git branch: 'main',
+                echo "cd ."
+              /*   git branch: 'main',
                     url: 'http://localhost:3000/admin/spf.invoice.service.git',
-                    credentialsId: 'GiteaTokenForJenkins'
+                    credentialsId: 'GiteaTokenForJenkins' **/
                 echo "SUCCESS: Git clone worked!"
             }
         }
@@ -39,8 +39,8 @@ pipeline {
                 dir('app') {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
-                        url: 'http://localhost:3000/admin/spf.invoice.service',
-                        credentialsId: 'GiteaTokenForJenkins'
+                        url: 'https://github.com/AminKadira/TestAuto_PiplinePOC'
+
                     echo "SUCCESS: Application repository cloned successfully"
                     
                     bat 'echo "INFO: Application files:"'
