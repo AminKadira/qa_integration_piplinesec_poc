@@ -30,7 +30,7 @@ pipeline {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
                         url: 'https://localhost:3000/admin/spf.invoice.service',
-                        credentialsId: 'git-credentials'
+                        credentialsId: 'GiteaTokenForJenkins'
                     echo "SUCCESS: Application repository cloned successfully"
                     
                     bat 'echo "INFO: Application files:"'
@@ -48,7 +48,7 @@ pipeline {
                     echo "INFO: Cloning test repository..."
                     git branch: 'main',
                         url: 'https://localhost:3000/admin/spf-invoice-tests',
-                        credentialsId: 'git-credentials'
+                        credentialsId: 'GiteaTokenForJenkins'
                     echo "SUCCESS: Test repository cloned successfully"
                     
                     bat 'echo "INFO: Test files:"'
