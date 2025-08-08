@@ -21,6 +21,16 @@ pipeline {
             }
         }
         
+        stage('Test Checkout') {
+            steps {
+                echo "Testing Git access..."
+                git branch: 'main',
+                    url: 'http://localhost:3000/admin/spf.invoice.service.git',
+                    credentialsId: 'GiteaTokenForJenkins'
+                echo "SUCCESS: Git clone worked!"
+            }
+        }
+
         stage('Checkout Application') {
             steps {
                 echo "======================================================"
