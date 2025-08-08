@@ -29,8 +29,8 @@ pipeline {
                 dir('app') {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
-                        url: 'https://localhost:3000/admin/spf.invoice.service',
-                        credentialsId: 'git-credentials'
+                        url: 'http://localhost:3000/admin/spf.invoice.service',
+                        credentialsId: 'GiteaTokenForJenkins'
                     echo "SUCCESS: Application repository cloned successfully"
                     
                     bat 'echo "INFO: Application files:"'
