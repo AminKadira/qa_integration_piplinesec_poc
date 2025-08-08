@@ -29,7 +29,7 @@ pipeline {
                 dir('app') {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
-                        url: 'https://admin@localhost:3000/admin/spf.invoice.service.git',
+                        url: 'https://localhost:3000/admin/spf.invoice.service',
                         credentialsId: 'git-credentials'
                     echo "SUCCESS: Application repository cloned successfully"
                     
