@@ -29,7 +29,7 @@ pipeline {
                 dir('app') {
                     echo "INFO: Cloning application repository..."
                     git branch: 'main',
-                        url: 'https://localhost:3000/admin/spf.invoice.service',
+                        url: 'http://localhost:3000/admin/spf.invoice.service',
                         credentialsId: 'GiteaTokenForJenkins'
                     echo "SUCCESS: Application repository cloned successfully"
                     
@@ -47,7 +47,7 @@ pipeline {
                 dir('tests') {
                     echo "INFO: Cloning test repository..."
                     git branch: 'main',
-                        url: 'https://localhost:3000/admin/spf-invoice-tests',
+                        url: 'http://localhost:3000/admin/spf-invoice-tests',
                         credentialsId: 'GiteaTokenForJenkins'
                     echo "SUCCESS: Test repository cloned successfully"
                     
